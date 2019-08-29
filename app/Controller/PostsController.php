@@ -1,11 +1,11 @@
 <?php
 class PostsController extends AppController {
-    public $helpers = array('Html', 'Form', 'Flash');
-    public $components = array('Flash');
+	public $helpers = array('Html', 'Form', 'Flash');
+	public $components = array('Flash');
 
-    public function index() {
-        $this->set('posts', $this->Post->find('all'));
-    }
+	public function index() {
+	$this->set('posts', $this->Post->find('all'));
+	}
 
 	public function view($id = null) {
 		if (!$id) {
