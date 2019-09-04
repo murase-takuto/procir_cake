@@ -1,14 +1,9 @@
-<div class="users form">
-<?php echo $this->Flash->render('auth'); ?>
-<?php echo $this->Form->create('user'); ?>
-	<fieldset>
-		<legend>
-			<?php echo __('Please enter your username and password'); ?>
-		</legend>
-		<?php
-		echo $this->Form->input('username');
-		echo $this->Form->input('password');
-		?>
-	</fieldset>
-<?php echo $this->Form->end(__('Login')); ?>
-</div>
+<?php echo $this->Form->create(); ?>
+
+<?php echo $this->Form->label('User.email'); ?>
+<?php echo $this->Form->text('User.email'); ?>
+
+<?php echo $this->Form->label('User.password'); ?>
+<?php echo $this->Form->password('User.password'); ?>
+
+<?php echo $this->Form->end('ログイン'); ?>

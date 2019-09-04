@@ -1,12 +1,30 @@
 <h1>Blog posts</h1>
 <?php
-echo $this->Html->link(
-	'Add Post',
-	array(
-		'controller' => 'posts',
-		'action' => 'add'
-	)
-);
+if (empty($this->Session->name)) {
+	echo $this->Html->link(
+		'ログイン画面へ',
+		array(
+			'controller' => 'users',
+			'action' => 'login'
+		)
+	);
+} else {
+	echo $this->Html->link(
+		'新規投稿画面へ',
+		array(
+			'controller' => 'posts',
+			'action' => 'add'
+		)
+	);
+
+	echo $this->Html->link(
+		'ログアウトする',
+		array(
+			'controller' => 'users',
+			'action' => 'logout'
+		)
+	);
+}
 ?>
 <table>
 	<tr>
