@@ -1,7 +1,7 @@
 <?php
 App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 
-class User extends Appmodel {
+class User extends AppModel {
 
 	var $name = 'User';
 	var $useTable = 'users';
