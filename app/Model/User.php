@@ -35,7 +35,7 @@ class User extends Appmodel {
 		),
 	);
 
-	public function beforeSave($options = arraay()) {
+	public function beforeSave($options = array()) {
 
 		if (isset($this->data[$this->alias]['password'])) {
 			$passwordHasher = new BlowfishPasswordHasher();
