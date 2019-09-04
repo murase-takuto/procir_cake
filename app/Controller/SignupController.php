@@ -1,10 +1,10 @@
 <?php
-class SignupController extends Appcontroller {
+class SignupController extends AppController {
 
 	public $name = 'Signup';
-	public $uses = array('user');
+	public $uses = array('User');
 	public $components = array(
-		'Signup',
+		'Security',
 	);
 
 	public function beforeFilter() {
