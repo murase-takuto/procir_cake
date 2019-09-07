@@ -14,10 +14,10 @@ class SignupController extends AppController {
 
 	public function index() {
 
-		if (!$this->request->data) {
-			$this->render();
-			return;
-		}
+//		if (!$this->request->data) {
+//			$this->render();
+//			return;
+//		}
 
 		$this->User->set($this->request->data);
 
