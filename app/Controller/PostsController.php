@@ -36,6 +36,8 @@ class PostsController extends AppController {
 		}
 
 		$post = $this->Post->findById($id);
+		$this->set('users', $this->Post->User->find('list', array('User.username')));
+
 		if (!$post) {
 			throw new NotFoundException(__('Invalid post'));
 		}
