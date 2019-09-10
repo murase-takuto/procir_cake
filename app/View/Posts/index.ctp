@@ -53,6 +53,9 @@ if (empty($this->Session->name)) {
 			?>
 		</td>
 		<td>
+			<?php echo $post['User']['name']; ?>
+		</td>
+		<td>
 			<?php
 			echo $this->Form->postlink(
 				'Delete',
