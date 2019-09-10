@@ -4,7 +4,7 @@ if (empty($this->Session->name)) {
 	echo $this->Html->link(
 		'ログイン画面へ',
 		array(
-			'controller' => 'users',
+			'controller' => 'Users',
 			'action' => 'login'
 		)
 	);
@@ -28,10 +28,11 @@ if (empty($this->Session->name)) {
 ?>
 <table>
 	<tr>
-		<th>Id</th>
-		<th>Title</th>
-		<th>Action</th>
-		<th>Created</th>
+		<th>投稿ID</th>
+		<th>タイトル</th>
+		<th>投稿者名</th>
+		<th>投稿の 削除 / 編集</th>
+		<th>投稿時間</th>
 	</tr>
 
 	<?php foreach ($posts as $post) : ?>
