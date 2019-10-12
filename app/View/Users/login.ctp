@@ -1,9 +1,27 @@
 <?php echo $this->Form->create(); ?>
 
-<?php echo $this->Form->label('users.mail'); ?>
-<?php echo $this->Form->text('users.mail'); ?>
-
-<?php echo $this->Form->label('users.password'); ?>
-<?php echo $this->Form->password('users.password'); ?>
+<?php echo $this->Form->input('mail'); ?>
+<?php echo $this->Form->input('password'); ?>
 
 <?php echo $this->Form->end('ログイン'); ?>
+
+<?php
+echo $this->Html->link(
+	'ユーザー新規登録はこちら',
+	array(
+		'controller' => 'Users',
+		'action' => 'add'
+	)
+);
+?>
+<br>
+<?php
+echo $this->Html->link(
+	'投稿閲覧のみの方はこちら',
+	array(
+		'controller' => 'Posts',
+		'action' => 'index'
+	)
+);
+
+?>

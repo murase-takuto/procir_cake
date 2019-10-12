@@ -1,2 +1,9 @@
-<p>ログアウトが完了しました。</p>
-<p><a href='./login/'>ログイン画面へ</a></p>
+<?php
+echo $this->Html->link(
+	'ログイン画面へ',
+	array(
+		'controller' => 'Users',
+		'action' => 'login'
+	)
+);
+?>
