@@ -1,56 +1,59 @@
 <?php
-//App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
+App::uses('BlowfishPasswordHasher', 'Controller/Component/Auth');
 App::uses('AppModel', 'Model');
 
 class User extends AppModel {
 
-//	var $name = 'User';
-//	var $useTable = 'users';
-//
-//	public $validate = array(
-//		//メールアドレス入力欄
-//		'email' => array(
-//			array(
-//				'rule' => 'notEmpty',
-//				'message' => 'メールアドレスが未入力です。'
-//			),
-//			array(
-//				'rule' => 'email',
-//				'message' => 'メールアドレスが不適切です。'
-//			),
-//			array(
-//				'rule' => 'isUnique',
-//				'message' => 'このメールアドレスは既に登録されています。'
-//			),
-//		),
-//		//パスワード入力欄
-//		'password' => array(
-//			array(
-//				'rule' => 'notEmpty',
-//				'message' => 'パスワードが未入力です。'
-//			),
-//			array(
-//				'rule' => 'alphanumericsymbols',
-//				'message' => 'パスワードに不適切な文字が含まれています。'
-//			),
-//		),
+	var $name = 'User';
+	var $useTable = 'users';
+
+	public $validate = array(
+		//DBに登録する名前の設定
+		'name' => array(
+			array(
+				'rule' => 'notBlank',
+				'message' => '氏名が未入力です。'
+			),
+		),
+		//DBに登録するメールアドレスの設定
+		'mail' => array(
+			array(
+				'rule' => 'notBlank',
+				'message' => 'メールアドレスが未入力です。'
+			),
+			array(
+				'rule' => 'email',
+				'message' => 'メールアドレスが不適切です。'
+			),
+			array(
+				'rule' => 'isUnique',
+				'message' => 'このメールアドレスは既に登録されています。'
+			),
+		),
+		//DBに登録するパスワードの設定
+		'password' => array(
+			array(
+				'rule' => 'notBlank',
+				'message' => 'パスワードが未入力です。'
+			),
+		)
+	);
+
+	public function beforeSave($options = array()) {
+
+		if (isset($this->data[$this->alias]['password'])) {
+			$passwordHasher = new BlowfishPasswordHasher();
+			$this->data[$this->alias]['password'] = $passwordHasher->hash(
+				$this->data[$this->alias]['password']
+			);
+		}
+		return true;
+	}
+
+//	public $hasMany = array(
+//		'Post' => array(
+//			'className' => 'Post'
+//		)
 //	);
-//
-//	public function beforeSave($options = array()) {
-//
-//		if (isset($this->data[$this->alias]['password'])) {
-//			$passwordHasher = new BlowfishPasswordHasher();
-//			$this->data[$this->alias]['password'] = $passwordHasher->hash(
-//				$this->data[$this->alias]['password']
-//			);
-//		}
-//		return true;
-//	}
-//
-//	public function alphanumericsymbols($check) {
-//		$value = array_values($check);
-//		$value = $value[0];
-//		return preg_match('/^[a-zA-Z0-9\s\x21-\x2f\x3a-\x40\x5b-\x60\x7b-\x7e]+$/', $value);
-//	}
 }
 ?>

@@ -1,14 +1,15 @@
-<h1>Blog posts</h1>
 <?php
-if (empty($this->Session->name)) {
+if (!$auth) :
 	echo $this->Html->link(
 		'ログイン画面へ',
 		array(
-			'controller' => 'Users',
+			'controller' => 'users',
 			'action' => 'login'
 		)
 	);
-} else {
+else :
+	echo "ログイン中ユーザー：" . $auth['name'] . "さん";
+	echo "<br>";
 	echo $this->Html->link(
 		'新規投稿画面へ',
 		array(
@@ -24,7 +25,7 @@ if (empty($this->Session->name)) {
 			'action' => 'logout'
 		)
 	);
-}
+endif;
 ?>
 <table>
 	<tr>
@@ -35,53 +36,53 @@ if (empty($this->Session->name)) {
 		<th>投稿時間</th>
 	</tr>
 
-	<?php foreach ($posts as $post) : ?>
+	<?php foreach ($post as $posts) : ?>
 	<tr>
 		<td>
-			<?php echo $post['Post']['id']; ?>
+			<?php echo $posts['Post']['id']; ?>
 		</td>
 		<td>
 			<?php
 			echo $this->Html->link(
-				$post['Post']['title'],
+				$posts['Post']['title'],
 				array(
 					'controller' => 'posts',
 					'action' => 'view',
-					$post['Post']['id']
+					$posts['Post']['id']
 				)
 			);
 			?>
 		</td>
 		<td>
-			<?php echo $post['User']['name']; ?>
+			<?php echo $posts['User']['name']; ?>
 		</td>
 		<td>
 			<?php
-			echo $this->Form->postlink(
-				'Delete',
-				array(
-					'action' => 'delete',
-					$post['Post']['id']
-				),
-				array(
-					'confirm' => 'Are you sure?'
-				)
-			);
-			?>
-			<?php
-			echo $this->Html->link(
-				'Edit',
-				array(
-					'action' => 'edit',
-					$post['Post']['id']
-				)
-			);
+			if ($auth['id'] == $posts['Post']['user_id']) :
+				echo $this->Form->postlink(
+					'Delete',
+					array(
+						'action' => 'delete',
+						$posts['Post']['id']
+					),
+					array(
+						'confirm' => '本当に削除しますか？'
+					)
+				);
+				echo '//';
+				echo $this->Html->link(
+					'Edit',
+					array(
+						'action' => 'edit',
+						$posts['Post']['id']
+					)
+				);
+			endif;
 			?>
 		</td>
 		<td>
-			<?php echo $post['Post']['created']; ?>
+			<?php echo $posts['Post']['created']; ?>
 		</td>
 	</tr>
 	<?php endforeach; ?>
-	<?php unset($post); ?>
 </table>
