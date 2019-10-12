@@ -2,9 +2,8 @@
 class PostsController extends AppController {
 	public $helpers = array('Html', 'Form', 'Flash');
 	public $components = array('Flash');
-    public function index() {
+	public function index() {
 		$this->set('post', $this->Post->find('all'));
-		//$this->set('posts', $this->Post->find('all'));
 	}
 
 	public function beforeFilter() {
@@ -14,7 +13,6 @@ class PostsController extends AppController {
 		);
 		$this->set('auth', $this->Auth->user());
 	}
-
 
 	public function view($id = null) {
 		if (!$id) {

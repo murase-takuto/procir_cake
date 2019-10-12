@@ -1,10 +1,7 @@
 <?php echo $this->Form->create(); ?>
-
 <?php echo $this->Form->input('mail'); ?>
 <?php echo $this->Form->input('password'); ?>
-
 <?php echo $this->Form->end('ログイン'); ?>
-
 <?php
 echo $this->Html->link(
 	'ユーザー新規登録はこちら',
@@ -23,5 +20,4 @@ echo $this->Html->link(
 		'action' => 'index'
 	)
 );
-
 ?>
