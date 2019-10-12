@@ -18,8 +18,8 @@ class UsersController extends AppController {
 		//POSTリクエストかどうか判定
 		//$this->Auth->login()で正常にログインできればAuthコンポーネントで指定したリダイレクト先へ遷移
 		if ($this->request->is('post')) {
-			//if ($this->Auth->login()) {
-			if ($this->Auth->login($this->request->data['User']['name'], $this->request->data['User']['password'])) {
+			if ($this->Auth->login()) {
+			//if ($this->Auth->login($this->request->data['User']['name'], $this->request->data['User']['password'])) {
 				$this->redirect($this->Auth->redirectUrl());
 			} else {
 				$this->Session->setFlash('ログインに失敗しました。');

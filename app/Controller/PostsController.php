@@ -37,13 +37,14 @@ class PostsController extends AppController {
 			$this->Flash->error(__('投稿に失敗しました。'));
 		}
 	}
-	//このアクションの部分はもう一回見直して修正しないとたぶんダメ
+
 	public function edit($id = null) {
 		if (!$id) {
 			throw new NotFoundException(__('Invalid post'));
 		}
 
-		$this->set('post', $this->Post->findById($id));
+		$post = $this->Post->findById($id);
+		$this->set('post', $post);
 
 		if (!$post) {
 			throw new NotFoundException(__('Invalid post'));
