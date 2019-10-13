@@ -62,8 +62,17 @@ class AppController extends Controller {
 					),
 					'passwordHasher' => 'Blowfish'
 				)
-			)
+			),
+			'authorize' => array('Controller')
 		)
 	);
+
+	public function isAuthorized($user) {
+		if ($user) {
+			return true;
+		}
+		return false;
+	}
+
 }
 ?>
