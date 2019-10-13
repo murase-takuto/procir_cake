@@ -40,7 +40,6 @@ class PostsController extends AppController {
 		if (!$id) {
 			throw new NotFoundException(__('Invalid post'));
 		}
-
 		$post = $this->Post->findById($id);
 		$this->set('post', $post);
 
@@ -72,8 +71,20 @@ class PostsController extends AppController {
 		} else {
 			$this->Flash->error(__('投稿の削除に失敗しました。'));
 		}
-
 		return $this->redirect(array('action' => 'index'));
+	}
+
+	public function isAuthorized($user) {
+		if (in_array($this->action, array('edit', 'delete'))) {
+			$postId = (int) $this->request->params['pass'][0];
+			if ($this->Post->isOwnedBy($postId, $user['id'])) {
+				return true;
+			} else {
+				$this->Flash->error(__('不適切なアクセスです。'));
+				return $this->redirect(array('action' => 'index'));
+			}
+		}
+		return parent::isAuthorized($user);
 	}
 }
 ?>
