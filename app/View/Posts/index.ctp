@@ -54,7 +54,15 @@ endif;
 			?>
 		</td>
 		<td>
-			<?php echo $posts['User']['name']; ?>
+			<?php
+			echo $this->Html->link(
+				$posts['User']['name'],
+				array(
+					'controller' => 'Users',
+					'action' => 'view'
+				)
+			);
+			?>
 		</td>
 		<td>
 			<?php
