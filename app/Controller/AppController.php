@@ -31,12 +31,6 @@ App::uses('Controller', 'Controller');
  * @link		https://book.cakephp.org/2.0/en/controllers.html#the-app-controller
  */
 class AppController extends Controller {
-
-	//ログアウト状態でもアクセスできるアクションを指定(現在はそれぞれのコントローラーで実行しているためコメントアウトしています。
-//	public function beforeFilter() {
-//		$this->Auth->allow();
-//	}
-
 	public $uses = array(
 		'posts',
 		'users'
