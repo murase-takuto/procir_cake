@@ -13,7 +13,6 @@ class UsersController extends AppController {
 			'login',
 			'logout',
 			'view'
-//			'edit'
 		);
 	}
 
@@ -69,9 +68,6 @@ class UsersController extends AppController {
 	public function edit($id = null) {
 		if ($this->request->is('post')) {
 			//画像の保存
-			$this->loadModel('Image');
-			$this->loadModel('User');
-
 			if (!$id) {
 				throw new NotFoundException(__('Invalid user'));
 			}
@@ -86,7 +82,7 @@ class UsersController extends AppController {
 			if (!empty($this->request->data['Image']['image'])) {
 				$image = $this->request->data['Image']['image'];
 				$this->Session->setFlash('画像をアップロードしました。');
-
+				//画像ファイル名の作成
 				$check = substr($image['name'], -3);
 				$micro_time = substr(explode('.', microtime(true))[1], 0, 3);
 				$upload_name = date('Ymd_H:i:s.') . $micro_time . '.' . $check;
@@ -95,8 +91,8 @@ class UsersController extends AppController {
 				$this->Image->set($this->request->data);
 
 				if ($this->Image->find('first', array('conditions' => array('Image.user_id' => $id)))) {
-					$image_id = $this->Image->find('first');
 					//画像更新の場合
+					$image_id = $this->Image->find('first');
 					$image = array(
 						'id' => $image_id['Image']['id'],
 						'name' => $upload_name,
