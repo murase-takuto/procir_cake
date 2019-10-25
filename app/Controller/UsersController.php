@@ -1,18 +1,14 @@
 <?php
 class UsersController extends AppController {
-<<<<<<< HEAD
 	//コントローラー名
 	public $name = 'Users';
 	//使用するモデル
-=======
 	public $helpers = array('Html', 'Form', 'Flash');
 	public $components = array('Flash');
 	//コントローラー名
 	public $name = 'Users';
 	//使用するモデル
 	public $uses = array('User', 'Post', 'Image');
-
->>>>>>> add_process
 	public function beforeFilter() {
 		$this->Auth->allow(
 			'add',
