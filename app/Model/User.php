@@ -49,5 +49,12 @@ class User extends AppModel {
 		}
 		return true;
 	}
+<<<<<<< HEAD
+=======
+
+//	public function isOwnedBy($user) {
+//		return $this->field('id', array('id' => $user)) !== false;
+//	}
+>>>>>>> add_process
 }
 ?>
