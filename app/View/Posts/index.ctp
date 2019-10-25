@@ -55,11 +55,11 @@ if (!$auth) {
 		<td>
 			<?php
 			echo $this->Html->link(
-			$posts['User']['name'],
-			array(
-				'controller' => 'users',
-				'action' => 'view',
-				$posts['Post']['user_id']
+				$posts['User']['name'],
+				array(
+					'controller' => 'users',
+					'action' => 'view',
+					$posts['Post']['user_id']
 				)
 			);
 			?>
