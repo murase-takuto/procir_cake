@@ -23,5 +23,4 @@ echo $this->Html->link(
 		'action' => 'index'
 	)
 );
-
 ?>
