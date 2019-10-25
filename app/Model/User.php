@@ -50,10 +50,8 @@ class User extends AppModel {
 		return true;
 	}
 
-//	public $hasMany = array(
-//		'Post' => array(
-//			'className' => 'Post'
-//		)
-//	);
+//	public function isOwnedBy($user) {
+//		return $this->field('id', array('id' => $user)) !== false;
+//	}
 }
 ?>

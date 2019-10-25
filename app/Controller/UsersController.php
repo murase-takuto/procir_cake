@@ -1,16 +1,19 @@
 <?php
 class UsersController extends AppController {
-
+	public $helpers = array('Html', 'Form', 'Flash');
+	public $components = array('Flash');
 	//コントローラー名
 	public $name = 'Users';
 	//使用するモデル
-//	public $uses = array('User');
+	public $uses = array('User', 'Post', 'Image');
+
 	public function beforeFilter() {
-//		parent::beforeFilter();
 		$this->Auth->allow(
 			'add',
 			'login',
-			'logout'
+			'logout',
+			'view'
+//			'edit'
 		);
 	}
 
@@ -19,8 +22,8 @@ class UsersController extends AppController {
 		//$this->Auth->login()で正常にログインできればAuthコンポーネントで指定したリダイレクト先へ遷移
 		if ($this->request->is('post')) {
 			if ($this->Auth->login()) {
-			//if ($this->Auth->login($this->request->data['User']['name'], $this->request->data['User']['password'])) {
 				$this->redirect($this->Auth->redirectUrl());
+				$this->set('auth', $this->Auth->user());
 			} else {
 				$this->Session->setFlash('ログインに失敗しました。');
 			}
@@ -33,8 +36,6 @@ class UsersController extends AppController {
 	}
 
 	public function add() {
-		//echo 1;
-		//exit;
 		if ($this->request->is('post')) {
 			//入力した内容をセット
 			$this->User->set($this->request->data);
@@ -46,12 +47,105 @@ class UsersController extends AppController {
 				$user = array('User' => $this->request->data('User'));
 			//	//データを保存
 				$this->User->save($user);
-			//	$this->redirect($this->Auth->redirectUrl());
 			//新規登録完了メッセージ
-			//	$this->Flash->success(__('新規登録が完了しました。'));
 				$this->Session->setFlash('新規登録が完了ました。');
 			}
 		}
+	}
+
+	public function view($id = null) {
+		if (!$id) {
+			throw new NotFoundException(__('Invalid user'));
+		}
+		$user = $this->User->findById($id);
+		$image = $this->Image->findByUser_id($id);
+		if (!$user) {
+			throw new NotFoundException(__('Invalid user'));
+		}
+		$this->set('user', $user);
+		$this->set('image', $image);
+	}
+
+	public function edit($id = null) {
+		if ($this->request->is('post')) {
+			//画像の保存
+			$this->loadModel('Image');
+			$this->loadModel('User');
+
+			if (!$id) {
+				throw new NotFoundException(__('Invalid user'));
+			}
+			$user = $this->User->findById($id);
+			$image = $this->Image->findByUser_id($id);
+			if (!$user) {
+				throw new NotFoundException(__('Invalid user'));
+			}
+			$this->set('user', $user);
+			$this->set('image', $image);
+			//画像保存
+			if (!empty($this->request->data['Image']['image'])) {
+				$image = $this->request->data['Image']['image'];
+				$this->Session->setFlash('画像をアップロードしました。');
+
+				$check = substr($image['name'], -3);
+				$micro_time = substr(explode('.', microtime(true))[1], 0, 3);
+				$upload_name = date('Ymd_H:i:s.') . $micro_time . '.' . $check;
+				move_uploaded_file($image['tmp_name'], 'img/' . DS . $upload_name);
+
+				$this->Image->set($this->request->data);
+
+				if ($this->Image->find('first', array('conditions' => array('Image.user_id' => $id)))) {
+					$image_id = $this->Image->find('first');
+					//画像更新の場合
+					$image = array(
+						'id' => $image_id['Image']['id'],
+						'name' => $upload_name,
+						'user_id' => $id
+					);
+				} else {
+					//画像新規登録の場合
+					$this->Image->create();
+					$image = array('Image' => array(
+						'name' => $upload_name,
+						'user_id' => $id
+					)
+					);
+				}
+				$this->Image->save($image);
+			}
+			//コメントについての処理
+			if (!empty($this->request->data['Image']['comment'])) {
+				$comment = $this->request->data['Image'];
+				$this->Session->setFlash('コメントを更新しました。');
+
+				$this->User->save(array(
+					'id' => $id,
+					'comment' => $comment['comment']
+				)
+				);
+			}
+			if (!$this->request->data) {
+				$this->request->data = $user;
+			}
+		}
+
+	}
+
+	public function isAuthorized($user) {
+		if (in_array($this->action, array('edit'))) {
+			$login_id = $this->Auth->user('id');
+			if ($login_id == $this->params['pass'][0]) {
+				return true;
+			} else {
+				$this->Flash->error(__('不適切なアクセスです。'));
+				return $this->redirect(array(
+					'controller' => 'Posts',
+					'action' => 'index'
+				)
+				);
+			}
+		}
+		return parent::isAuthorized($user);
 	}
 }
 ?>

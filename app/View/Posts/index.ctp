@@ -1,15 +1,14 @@
+<h1>掲示板</h1>
 <?php
-if (!$auth) :
+if (!$auth) {
 	echo $this->Html->link(
 		'ログイン画面へ',
 		array(
-			'controller' => 'users',
+			'controller' => 'Users',
 			'action' => 'login'
 		)
 	);
-else :
-	echo "ログイン中ユーザー：" . $auth['name'] . "さん";
-	echo "<br>";
+} else {
 	echo $this->Html->link(
 		'新規投稿画面へ',
 		array(
@@ -25,7 +24,7 @@ else :
 			'action' => 'logout'
 		)
 	);
-endif;
+}
 ?>
 <table>
 	<tr>
@@ -56,36 +55,36 @@ endif;
 		<td>
 			<?php
 			echo $this->Html->link(
-				$posts['User']['name'],
-				array(
-					'controller' => 'Users',
-					'action' => 'view'
+			$posts['User']['name'],
+			array(
+				'controller' => 'users',
+				'action' => 'view',
+				$posts['Post']['user_id']
 				)
 			);
 			?>
 		</td>
 		<td>
 			<?php
-			if ($auth['id'] == $posts['Post']['user_id']) :
-				echo $this->Form->postlink(
-					'Delete',
-					array(
-						'action' => 'delete',
-						$posts['Post']['id']
-					),
-					array(
-						'confirm' => '本当に削除しますか？'
-					)
-				);
-				echo '//';
-				echo $this->Html->link(
-					'Edit',
-					array(
-						'action' => 'edit',
-						$posts['Post']['id']
-					)
-				);
-			endif;
+			echo $this->Form->postlink(
+				'Delete',
+				array(
+					'action' => 'delete',
+					$posts['Post']['id']
+				),
+				array(
+					'confirm' => '本当に削除しますか？'
+				)
+			);
+			?>
+			<?php
+			echo $this->Html->link(
+				'Edit',
+				array(
+					'action' => 'edit',
+					$posts['Post']['id']
+				)
+			);
 			?>
 		</td>
 		<td>
