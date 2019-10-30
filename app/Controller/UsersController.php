@@ -75,9 +75,6 @@ class UsersController extends AppController {
 			throw new NotFoundException(__('Invalid user'));
 		}
 		$image = $this->Image->findByUser_id($id);
-		if (!$image) {
-			$image = null;
-		}
 		$this->set('user', $user);
 		$this->set('image', $image);
 
