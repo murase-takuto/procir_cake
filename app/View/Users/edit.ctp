@@ -15,6 +15,9 @@ echo $this->Form->input(
 		'required' => false
 	)
 );
+if (empty($image['User']['comment'])) {
+	$image['User']['comment'] = null;
+}
 echo $this->Form->input(
 	'comment',
 	array(

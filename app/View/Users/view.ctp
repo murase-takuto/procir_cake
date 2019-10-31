@@ -1,5 +1,6 @@
 <h1>マイページ</h1>
-<?php echo '投稿者：' . $user['User']['name']; ?>
+<?php
+echo '投稿者：' . $user['User']['name']; ?>
 <br>
 <?php
 echo 'ユーザー画像：';

@@ -79,10 +79,10 @@ class UsersController extends AppController {
 		$this->set('image', $image);
 
 		if ($this->request->is('post')) {
-			$this->Image->set($this->request->data);
-			if ($this->Image->validates(array('fieldlist' => array('Image.image')))) {
-				//画像保存
-				if ($this->request->data['Image']['image']['error'] == 0) {
+			if ($this->request->data['Image']['image']['error'] == 0) {
+				$this->Image->set($this->request->data);
+				if ($this->Image->validates(array('fieldlist' => array('Image.image')))) {
+					//画像保存
 					$image = $this->request->data['Image']['image'];
 					//画像ファイル名の作成
 					$check = substr($image['name'], -3);
@@ -110,13 +110,13 @@ class UsersController extends AppController {
 						);
 					}
 					$this->Image->save($image, array('validate' => false));
+					$this->Session->setFlash('ユーザー画像を更新しました。');
+				} else {
+					$errors = $this->Image->validationErrors;
 				}
-				$this->Session->setFlash('ユーザー画像を更新しました。');
-			} else {
-				$errors = $this->Image->validationErrors;
 			}
 			//コメントについての処理
-			if (!empty($this->request->data['Image']['comment'])) {
+			if ($this->request->data['Image']['comment'] != $user['User']['comment']) {
 				$comment = $this->request->data['Image'];
 				$this->User->save(array(
 					'id' => $id,
