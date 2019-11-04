@@ -1,4 +1,5 @@
 <?php
+App::uses('CakeEmail', 'Network/Email');
 class UsersController extends AppController {
 	public $helpers = array('Html', 'Form', 'Flash');
 	public $components = array('Flash');
@@ -12,7 +13,9 @@ class UsersController extends AppController {
 			'add',
 			'login',
 			'logout',
-			'view'
+			'view',
+			'send_mail',
+			'pass_reset'
 		);
 	}
 
@@ -32,6 +35,49 @@ class UsersController extends AppController {
 	public function logout() {
 		$this->Auth->logout();
 		$this->Session->setFlash('ログアウトしました。');
+	}
+
+	public function send_mail() {
+		if ($this->request->data) {
+			$user = $this->User->findByMail($this->request->data['User']['mail']);
+			if ($user) {
+				$token = md5(uniqid(rand(), true));
+				$url = 'https://procir-study.site/murase/procir_cake/cakephp/Users/pass_reset/' . $token;
+				$check_time = date('Y-m-d H:i:s');
+				$data = array(
+					'id' => $user['User']['id'],
+					'pass_token' => $token,
+					'check_time' => $check_time
+				);
+				$this->User->save($data);
+
+				$Email = new CakeEmail();
+				$Email->from('a@a.com');
+				$Email->to($this->request->data['User']['mail']);
+				$Email->subject('パスワード再設定メール');
+				$Email->send('以下のURLから30分以内にパスワードを再設定してください。' . $url);
+			}
+			$this->Session->setFlash('パスワード再発行用URLを送信しました。');
+		}
+	}
+
+	public function pass_reset() {
+		if ($this->request->data) {
+			$token = $this->params['pass'][0];
+			$user = $this->User->findByPass_token($token);
+			$limit = date('Y-m-d H:i:s', strtotime('-30 minute'));
+			if (!empty($user) && $user['User']['pass_token'] != null && $user['User']['check_time'] >= $limit) {
+				$data = array(
+					'id' => $user['User']['id'],
+					'password' => $this->request->data['User']['password'],
+					'pass_token' => null
+				);
+				$this->User->save($data);
+				$this->Session->setFlash('パスワードを変更しました。');
+			} else {
+				$this->Session->setFlash('不適切なアクセスです。');
+			}
+		}
 	}
 
 	public function add() {
