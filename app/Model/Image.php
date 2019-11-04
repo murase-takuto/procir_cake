@@ -14,14 +14,24 @@ class Image extends AppModel {
 						'png'
 					)
 				),
-				'allowEmpty' => false,
-				'message' => 'ファイルの形式が不適切です。jpg, jpeg, gif, png 形式のみ利用可能です。'
+				'message' => 'ファイルの形式が不適切です。jpg, jpeg, gi, png 形式のみ利用可能です。'
 			),
 			'rule2' => array(
 				'rule' => array(
-					'filesize', '<=', '1000000'
+					'filesize', '<=', '10MB'
 				),
-				'message' => '画像サイズは 1MB(1000KB) 以下のみ利用可能です。'
+				'message' => '画像サイズは 10MB 以下のみ利用可能です。'
+			),
+			'rule3' => array(
+				'rule' => array(
+					'mimetype',
+					array(
+						'image/jpeg',
+						'image/png',
+						'image/gif'
+					)
+				),
+				'message' => 'MIME タイプが不適切です。'
 			)
 		)
 	);

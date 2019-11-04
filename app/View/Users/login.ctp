@@ -21,3 +21,13 @@ echo $this->Html->link(
 	)
 );
 ?>
+<br>
+<?php
+echo $this->Html->link(
+	'パスワードを忘れた方はこちら',
+	array(
+		'controller' => 'Users',
+		'action' => 'send_mail'
+	)
+);
+?>

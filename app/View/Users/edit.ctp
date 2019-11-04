@@ -11,10 +11,21 @@ echo $this->Form->input(
 	array(
 		'label' => false,
 		'type' => 'file',
-		'multiple'
+		'multiple',
+		'required' => false
 	)
 );
-echo $this->Form->input('comment', array('rows' => '1', 'label' => '一言コメント'));
+if (empty($image['User']['comment'])) {
+	$image['User']['comment'] = null;
+}
+echo $this->Form->input(
+	'comment',
+	array(
+		'rows' => '1',
+		'label' => '一言コメント',
+		'default' => $image['User']['comment']
+		)
+	);
 echo $this->Form->input('id', array('type' => 'hidden'));
 echo $this->Form->submit(
 	'更新する',

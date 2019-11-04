@@ -1,4 +1,5 @@
 <?php
+App::uses('CakeEmail', 'Network/Email');
 class UsersController extends AppController {
 	//コントローラー名
 	public $name = 'Users';
@@ -14,7 +15,9 @@ class UsersController extends AppController {
 			'add',
 			'login',
 			'logout',
-			'view'
+			'view',
+			'send_mail',
+			'pass_reset'
 		);
 	}
 
@@ -36,19 +39,62 @@ class UsersController extends AppController {
 		$this->Session->setFlash('ログアウトしました。');
 	}
 
+	public function send_mail() {
+		if ($this->request->data) {
+			$user = $this->User->findByMail($this->request->data['User']['mail']);
+			if ($user) {
+				$token = md5(uniqid(rand(), true));
+				$url = 'https://procir-study.site/murase/procir_cake/cakephp/Users/pass_reset/' . $token;
+				$check_time = date('Y-m-d H:i:s');
+				$data = array(
+					'id' => $user['User']['id'],
+					'pass_token' => $token,
+					'check_time' => $check_time
+				);
+				$this->User->save($data);
+
+				$Email = new CakeEmail();
+				$Email->from('a@a.com');
+				$Email->to($this->request->data['User']['mail']);
+				$Email->subject('パスワード再設定メール');
+				$Email->send('以下のURLから30分以内にパスワードを再設定してください。' . $url);
+			}
+			$this->Session->setFlash('パスワード再発行用URLを送信しました。');
+		}
+	}
+
+	public function pass_reset() {
+		if ($this->request->data) {
+			$token = $this->params['pass'][0];
+			$user = $this->User->findByPass_token($token);
+			$limit = date('Y-m-d H:i:s', strtotime('-30 minute'));
+			if (!empty($user) && $user['User']['pass_token'] != null && $user['User']['check_time'] >= $limit) {
+				$data = array(
+					'id' => $user['User']['id'],
+					'password' => $this->request->data['User']['password'],
+					'pass_token' => null
+				);
+				$this->User->save($data);
+				$this->Session->setFlash('パスワードを変更しました。');
+			} else {
+				$this->Session->setFlash('不適切なアクセスです。');
+			}
+		}
+	}
+
 	public function add() {
 		if ($this->request->is('post')) {
 			//入力した内容をセット
 			$this->User->set($this->request->data);
 			//入力内容をチェック
 			if ($this->User->validates()) {
-			//	//モデルの状態をリセット
+				//モデルの状態をリセット
 				$this->User->create();
-			//	//入力済みデータをモデルにセット
+				//入力済みデータをモデルにセット
 				$user = array('User' => $this->request->data('User'));
-			//	//データを保存
+				//データを保存
 				$this->User->save($user);
-			//新規登録完了メッセージ
+				//新規登録完了メッセージ
 				$this->Session->setFlash('新規登録が完了ました。');
 			}
 		}
@@ -68,65 +114,69 @@ class UsersController extends AppController {
 	}
 
 	public function edit($id = null) {
+		//画像の保存
+		if (!$id) {
+			throw new NotFoundException(__('Invalid user'));
+		}
+		$user = $this->User->findById($id);
+		if (!$user) {
+			throw new NotFoundException(__('Invalid user'));
+		}
+		$image = $this->Image->findByUser_id($id);
+		$this->set('user', $user);
+		$this->set('image', $image);
+
 		if ($this->request->is('post')) {
-			//画像の保存
-			if (!$id) {
-				throw new NotFoundException(__('Invalid user'));
-			}
-			$user = $this->User->findById($id);
-			$image = $this->Image->findByUser_id($id);
-			if (!$user) {
-				throw new NotFoundException(__('Invalid user'));
-			}
-			$this->set('user', $user);
-			$this->set('image', $image);
-			//画像保存
-			if (!empty($this->request->data['Image']['image'])) {
-				$image = $this->request->data['Image']['image'];
-				$this->Session->setFlash('画像をアップロードしました。');
-				//画像ファイル名の作成
-				$check = substr($image['name'], -3);
-				$micro_time = substr(explode('.', microtime(true))[1], 0, 3);
-				$upload_name = date('Ymd_H:i:s.') . $micro_time . '.' . $check;
-				move_uploaded_file($image['tmp_name'], 'img/' . DS . $upload_name);
-
+			if ($this->request->data['Image']['image']['error'] == 0) {
 				$this->Image->set($this->request->data);
+				if ($this->Image->validates(array('fieldlist' => array('Image.image')))) {
+					//画像保存
+					$image = $this->request->data['Image']['image'];
+					//画像ファイル名の作成
+					$check = substr($image['name'], -3);
+					$micro_time = substr(explode('.', microtime(true))[1], 0, 3);
+					$upload_name = date('Ymd_H:i:s.') . $micro_time . '.' . $check;
+					move_uploaded_file($image['tmp_name'], 'img/' . DS . $upload_name);
 
-				if ($this->Image->find('first', array('conditions' => array('Image.user_id' => $id)))) {
-					//画像更新の場合
-					$image_id = $this->Image->find('first');
-					$image = array(
-						'id' => $image_id['Image']['id'],
-						'name' => $upload_name,
-						'user_id' => $id
-					);
+					$this->Image->set($this->request->data);
+
+					if ($this->Image->find('first', array('conditions' => array('Image.user_id' => $id)))) {
+						//画像更新の場合
+						$image_id = $this->Image->find('first');
+						$image = array(
+							'id' => $image_id['Image']['id'],
+							'name' => $upload_name,
+							'user_id' => $id
+						);
+					} else {
+						//画像新規登録の場合
+						$this->Image->create();
+						$image = array('Image' => array(
+							'name' => $upload_name,
+							'user_id' => $id
+						)
+						);
+					}
+					$this->Image->save($image, array('validate' => false));
+					$this->Session->setFlash('ユーザー画像を更新しました。');
 				} else {
-					//画像新規登録の場合
-					$this->Image->create();
-					$image = array('Image' => array(
-						'name' => $upload_name,
-						'user_id' => $id
-					)
-					);
+					$errors = $this->Image->validationErrors;
 				}
-				$this->Image->save($image);
 			}
 			//コメントについての処理
-			if (!empty($this->request->data['Image']['comment'])) {
+			if ($this->request->data['Image']['comment'] != $user['User']['comment']) {
 				$comment = $this->request->data['Image'];
-				$this->Session->setFlash('コメントを更新しました。');
-
 				$this->User->save(array(
 					'id' => $id,
 					'comment' => $comment['comment']
 				)
 				);
+				$this->Session->setFlash('コメントを更新しました。');
 			}
 			if (!$this->request->data) {
 				$this->request->data = $user;
 			}
 		}
-
 	}
 
 	public function isAuthorized($user) {
